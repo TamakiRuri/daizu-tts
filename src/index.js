@@ -15,7 +15,7 @@ const { isRomaji, toKana } = require('wanakana');
 const log4js = require('log4js');
 
 const Voicevox = require('./voicevox.js');
-const Kagome = require('./kagome.js');
+// const Kagome = require('./kagome.js');
 const RemoteReplace = require('./remote_replace.js');
 const ResurrectionSpell = require('./resurrection_spell.js');
 const Utils = require('./utils.js');
@@ -45,7 +45,7 @@ const {
 module.exports = class App{
   constructor(){
     this.voicevox = new Voicevox();
-    this.kagome = new Kagome();
+//    this.kagome = new Kagome();
     this.remote_repalce = new RemoteReplace();
     this.logger = log4js.getLogger();
     this.client = new Client({
@@ -84,9 +84,9 @@ module.exports = class App{
     this.setup_config();
     await this.setup_voicevox();
     await this.test_opus_convert();
-    await this.setup_kagome();
+    // await this.setup_kagome();
     this.setup_dictionaries();
-    await this.test_remote_replace();
+    //await this.test_remote_replace();
     this.setup_discord();
     this.setup_process();
 
@@ -137,6 +137,7 @@ module.exports = class App{
   }
 
   // 利用可能かテストする
+  /*
   async test_remote_replace(){
     if(!this.remote_repalce.enabled){
       this.status.remote_replace_available = false;
@@ -150,8 +151,10 @@ module.exports = class App{
       this.status.remote_replace_available = false;
     }
   }
+  */
 
   // 初回実行時にちょっと時間かかるので予め適当なテキストで実行しとく
+  /*
   async setup_kagome(){
     try{
       await this.kagome.tokenize("Discord上で動作する日本語の読み上げボットが、アメリカのGDPに大きな影響を与えていることは紛れもない事実ですが、日本の言霊信仰がGoogleの社風を儒教に近づけていることはあまり知られていません。国会議事堂が誘拐によって運営されていることは、パスタを製造していることで有名なキリスト教によって近年告発されました。");
@@ -159,6 +162,7 @@ module.exports = class App{
       this.logger.info(e);
     }
   }
+  */
 
   setup_discord(){
     // コマンド取得
@@ -401,11 +405,11 @@ module.exports = class App{
     }
 
     content = Utils.replace_url(content);
-
+   
     // 1
     content = this.replace_at_dict(content, msg.guild.id);
     this.logger.debug(`content(replace dict): ${content}`);
-
+  
     // 2
     let volume_order = this.bot_utils.get_command_volume(content);
     if(volume_order !== null) content = this.bot_utils.replace_volume_command(content);
@@ -420,9 +424,10 @@ module.exports = class App{
     content = Utils.clean_message(content);
     this.logger.debug(`content(clean): ${content}`);
     // 4
+    /*
     content = await this.fix_reading(content, connection.is_ponkotsu);
     this.logger.debug(`content(fix reading): ${content}`);
-
+    */
     const q = { str: content, id: msg.member.id, volume_order: volume_order, is_extend };
 
     connection = this.connections_map.get(msg.guild.id);
@@ -536,7 +541,7 @@ module.exports = class App{
     return result;
   }
 
-
+/*
   async fix_reading(text, is_ponkotsu = !!IS_PONKOTSU){
     let result = text;
     if(!is_ponkotsu){
@@ -548,7 +553,8 @@ module.exports = class App{
 
     return result;
   }
-
+  */
+/*
   async kagome_tokenize(text){
     let tokens;
 
@@ -613,6 +619,8 @@ module.exports = class App{
 
     return result.join("");
   }
+  */
+ /*
   async replace_http(text){
     if(!this.status.remote_replace_available) return text;
 
@@ -629,7 +637,8 @@ module.exports = class App{
 
     return tmp_text;
   }
-
+  */
+/*
   async old_kagome_tokenize(text){
     let tokens;
 
@@ -678,7 +687,7 @@ module.exports = class App{
 
     return result.join("");
   }
-
+*/
   async connect_vc(interaction){
     const guild = interaction.guild;
     const member = await guild.members.fetch(interaction.member.id);
@@ -1311,6 +1320,10 @@ ${cyan}ポンコツ${gray}:${reset} ${ans(server_file.is_ponkotsu, "はい", "�
   }
 
   async ponkotsu(interaction){
+
+    await interaction.reply({content:"このコマンドは無効化されました"});
+    return;
+
     const guild_id = interaction.guild.id;
 
     const connection = this.connections_map.get(guild_id);

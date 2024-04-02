@@ -1,6 +1,4 @@
 /node_modules/
 /servers/
-/dictionaries/*
-!/dictionaries/fix_neologd.json
-!/dictionaries/lite_neologd.json
+/dictionaries/
 /config.json
