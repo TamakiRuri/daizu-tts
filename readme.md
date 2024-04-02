@@ -3,8 +3,8 @@
 Voicevoxを利用した小規模向けのシンプルなDiscord読み上げボット
 
 > このプロジェクトは日本語のみ対応します。他の言語（英語を含め）はサポート範囲外です。
-
-> This project is intended only for Japanese TTS. Other languages, including English, is NOT supported.
+>
+> This project is intended only for Japanese TTS. Other languages, including English, are **NOT** supported.
 
 voicevox-tts-discord のフォークです
 
@@ -55,11 +55,11 @@ kagome front、remote replaceとGoを使用しない
     2. `go build main.go`でエラーとして出てくるコマンド叩いて依存関係をどうにかする
     3. ビルドできたら`./main`-->
 4. 環境を整える
-    1. 好きな方法でNode.jsとpnpmを入れる(v20以上が必要です) 
+    1. 好きな方法でNode.jsとpnpmを入れる(Node.js v20以上が必要です) 
     2. 好きな方法でGitを入れる
     3. 好きな方法でFFmpegを入れる(Linuxならパッケージマネージャーから入れるといい)
 5. そろそろ動かしたい
-    1. `git clone https://github.com/notoiro/voicevox-tts-discord.git; cd voicevox-tts-discord`
+    1. `git clone https://github.com/TamakiRuri/Daizu-tts.git; cd Daizu-tts`
     2. `cp sample.json config.json`
     3. config.jsonを編集する
         - `VOICEVOX_ENGINE`は2970を自分の指定したポートに合わせる
