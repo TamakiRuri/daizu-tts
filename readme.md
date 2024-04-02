@@ -2,6 +2,10 @@
 
 Voicevoxを利用した小規模向けのシンプルなDiscord読み上げボット
 
+> このプロジェクトは日本語のみ対応します。他の言語（英語を含め）はサポート範囲外です。
+
+> This project is intended only for Japanese TTS. Other languages, including English, is NOT supported.
+
 voicevox-tts-discord のフォークです
 
 元のプロジェクトと比べて：
@@ -13,10 +17,10 @@ kagome front、remote replaceとGoを使用しない
 1. Git
 2. Node.js  v20以上 (aptでインストールするとv18がインストールされることがありますのでご注意ください)
 3. pnpm
-~~4. Go~~
+4. ~~Go~~
 5. [Voicevox Engine](https://github.com/VOICEVOX/voicevox_engine/)
 6. Discord APIのトークン
-~~7. [Kagome front](https://github.com/notoiro/kagome_front)~~
+7. ~~[Kagome front](https://github.com/notoiro/kagome_front)~~
 8. FFmpeg
 
 ## あるといい
@@ -33,8 +37,11 @@ kagome front、remote replaceとGoを使用しない
     4. `https://discord.com/oauth2/authorize?client_id=APPLICATIONID&scope=bot&permissions=3148800`の`APPLICATIONID`をコピーしたやつに置き換えてメモっとく(招待用のURL)
 
     > Permissions について
-    > このbotは、以下のPermissionを使用する
+    >
+    > この bot は、以下の Permissions を使用する
+    >
     > OAuth2: bot
+    >
     > Bot Permissions: Read Messages / View Channels, Send Messages, Connect, Speak
 
     5. `Bot`→`Add Bot`でBotになる
@@ -43,7 +50,7 @@ kagome front、remote replaceとGoを使用しない
 2. Voicevox Engineを入れる
     1. [Voicevoxの公式](https://voicevox.hiroshiba.jp/ )から自分の環境に合ったやつをダウンロードしてくる(Engineのリポジトリが最新じゃないのでフル版のEngine部分だけ使う)
     2. `run`って書いてるやつ実行する(環境によって違うけど概ねrunだけのやつが正解)、`--port`でポート指定しておくと楽
-~~3. Kagome frontを入れる~~
+    3. ~~Kagome frontを入れる~~
 <!--    1. `git clone https://github.com/notoiro/kagome_front.git; cd kagome_front`
     2. `go build main.go`でエラーとして出てくるコマンド叩いて依存関係をどうにかする
     3. ビルドできたら`./main`-->
@@ -69,7 +76,14 @@ kagome front、remote replaceとGoを使用しない
     7. [SystemdのServiceのサンプル](https://github.com/notoiro/voicevox-tts-discord/tree/master/services )があるのでお好みで
 
 ## 使い方
-/help
+
+```
+    /connect  //ボイスチャットに接続
+    /disconnect  //ボイスチャットから切断
+    /setvoice  //話者を変更(選択肢の上限が25のため、4つに分けられています)
+    /help  //ヘルプ
+
+```
 
 <!--
 ## dictionaries以下のファイルについて
