@@ -4,7 +4,7 @@ const crypto = require('crypto');
 const ResurrectionSpell = require('./resurrection_spell.js');
 const SafeRegexpUtils = require('./safe_regexp_utils.js');
 
-const { SERVER_DIR, EXTEND_PASS, IS_PONKOTSU } = require('../config.json');
+const { SERVER_DIR, EXTEND_PASS } = require('../config.json');
 
 const { shortcut } = require('../shortcuts.json');
 
@@ -15,7 +15,6 @@ const DEFAULT_SETTING = {
     DEFAULT: { voice: 1, speed: 100, pitch: 100, intonation: 100, volume: 100 }
   },
   dict: [["Discord", "でぃすこーど", 2]],
-  is_ponkotsu: !!IS_PONKOTSU
 }
 const SETTING_LISTS = Object.keys(DEFAULT_SETTING);
 
@@ -30,12 +29,12 @@ module.exports = class BotUtils{
     this.EXTEND_ENABLE = EXTEND_PASS !== undefined && EXTEND_PASS !== "none";
   }
 
-  init_voicelist(voice_list, voice_liblary_list){
+  init_voicelist(voice_list, voice_library_list){
     const list = voice_list.toSorted((a, b) => a.value - b.value);
 
     let add = [];
 
-    for(let l of voice_liblary_list){
+    for(let l of voice_library_list){
       const r = new RegExp(l, 'g');
       const f = list.find(el => r.test(el.name));
       if(f) add.push({ name: l, value: f.value });
