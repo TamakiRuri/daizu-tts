@@ -29,8 +29,6 @@ const ans = (flag, true_text, false_text) => {
   return flag ? true_text:false_text;
 };
 
-const priority_list = [ "最弱", "よわい", "普通", "つよい", "最強" ];
-
 
 //初期化など
 
@@ -48,7 +46,7 @@ const voicevox = new Voicevox();
 let logger = log4js.getLogger();
 const bot_utils = new BotUtils(logger);
 
-let connections_map = new Map();
+global.connections_map = new Map();
 
 let voice_library_list = [];
 
@@ -285,11 +283,6 @@ module.exports = class App{
         case "setvoiceall":
         case "currentvoice":
         case "resetconnection":
-        case "dicadd":
-        case "dicedit":
-        case "dicdel":
-        case "dicpriority":
-        case "systemvoicemute":
         case "copyvoicesay":
         case "info":
           if(command_name === "connect") command_name = "connect_vc";
@@ -332,17 +325,17 @@ module.exports = class App{
   }
 
   update_status_text(){
-    client.user.setActivity(`${connections_map.size}本の接続`, { type: ActivityType.Playing });
+    client.user.setActivity(`${global.connections_map.size}本の接続`, { type: ActivityType.Playing });
   }
 
   is_target(msg){
-    const connection = connections_map.get(msg.guild.id);
+    const connection = global.connections_map.get(msg.guild.id);
 
     return !(!connection || connection.text !== msg.channelId || msg.cleanContent.indexOf(PREFIX) === 0);
   }
 
   add_system_message(text, guild_id, voice_ref_id = "DEFAULT"){
-    const connection = connections_map.get(guild_id);
+    const connection = global.connections_map.get(guild_id);
     if(!connection) return;
     if(connection.system_mute_counter > 0){
       connection.system_mute_counter--;
@@ -375,7 +368,7 @@ module.exports = class App{
   async add_text_queue(msg, skip_discord_features = false){
     let content = msg.cleanContent;
 
-    let connection = connections_map.get(msg.guild.id);
+    let connection = global.connections_map.get(msg.guild.id);
     if(!connection) return;
 
     logger.debug(`content(from): `);
@@ -420,7 +413,7 @@ module.exports = class App{
 
     const q = { str: content, id: msg.member.id, volume_order: volume_order, is_extend };
 
-    connection = connections_map.get(msg.guild.id);
+    connection = global.connections_map.get(msg.guild.id);
     logger.debug(`play connection: ${connection}`);
     if(!connection) return;
 
@@ -433,7 +426,7 @@ module.exports = class App{
 
   async play(guild_id){
     // 接続ないなら抜ける
-    const connection = connections_map.get(guild_id);
+    const connection = global.connections_map.get(guild_id);
     if(!connection || connection.is_play || connection.queue.length === 0) return;
 
     connection.is_play = true;
@@ -517,7 +510,7 @@ module.exports = class App{
 
   replace_at_dict(text, guild_id){
     // 何故か接続ない場合はなにもしないで戻す
-    const connection = connections_map.get(guild_id);
+    const connection = global.connections_map.get(guild_id);
     if(!connection) return text;
 
     let result = text;
@@ -553,7 +546,7 @@ module.exports = class App{
     const voice_channel_id = member_vc.id;
     const guild_id = guild.id;
 
-    const current_connection = connections_map.get(guild_id);
+    const current_connection = global.connections_map.get(guild_id);
 
     if(current_connection){
       await interaction.reply({ content: "接続済みです。" });
@@ -610,7 +603,7 @@ module.exports = class App{
 
     connection.on(VoiceConnectionStatus.Destroyed, async() => {
       player.stop();
-      connections_map.delete(guild_id);
+      global.connections_map.delete(guild_id);
       this.update_status_text();
       logger.debug(`self disconnected`);
     });
@@ -622,7 +615,7 @@ module.exports = class App{
       this.play(guild_id);
     });
 
-    connections_map.set(guild_id, connectinfo);
+    global.connections_map.set(guild_id, connectinfo);
 
     if(!this.status.debug){
       await interaction.reply({ content: '接続しました。' });
@@ -635,7 +628,7 @@ module.exports = class App{
   check_join_and_leave(old_s, new_s){
     const guild_id = new_s.guild.id;
     // 接続ないなら抜ける
-    const connection = connections_map.get(guild_id);
+    const connection = global.connections_map.get(guild_id);
     if(!connection) return;
 
     const member = new_s.member;
@@ -678,7 +671,7 @@ module.exports = class App{
 
   skip_current_text(guild_id){
     // 接続ないなら抜ける
-    const connection = connections_map.get(guild_id);
+    const connection = global.connections_map.get(guild_id);
     if(!connection || !connection.is_play) return;
 
     connection.audio_player.stop(true);
@@ -707,7 +700,7 @@ module.exports = class App{
     const guild_id = interaction.guild.id;
     const member_id = interaction.member.id;
 
-    const connection = connections_map.get(guild_id);
+    const connection = global.connections_map.get(guild_id);
 
     const server_file = bot_utils.get_server_file(guild_id);
 
@@ -747,7 +740,7 @@ module.exports = class App{
     const guild_id = interaction.guild.id;
     const member_id = override_id ?? interaction.member.id;
 
-    const connection = connections_map.get(guild_id);
+    const connection = global.connections_map.get(guild_id);
 
     const server_file = bot_utils.get_server_file(guild_id);
 
@@ -845,192 +838,20 @@ module.exports = class App{
     const vc_con = getVoiceConnection(guild_id);
     if(vc_con) vc_con.destroy();
 
-    const connection = connections_map.get(guild_id);
+    const connection = global.connections_map.get(guild_id);
     if(connection) connection.audio_player.stop();
-    connections_map.delete(guild_id);
+    global.connections_map.delete(guild_id);
 
     this.update_status_text();
 
     interaction.reply({ content: "どっかーん！" })
   }
 
-  async dicadd(interaction){
-    const guild_id = interaction.guild.id;
-
-    const connection = connections_map.get(guild_id);
-
-    const server_file = bot_utils.get_server_file(guild_id);
-    let dict = server_file.dict;
-
-    const word_from = interaction.options.get("from").value;
-    const word_to = interaction.options.get("to").value;
-
-    for(let d of dict){
-      if(d[0] === word_from){
-        interaction.reply({ content: "既に登録されています！" });
-        return;
-      }
-    }
-
-    dict.push([word_from, word_to, 2]);
-
-    bot_utils.write_serverinfo(guild_id, server_file, { dict: dict });
-
-    if(connection) connection.dict = dict;
-
-    const em = new EmbedBuilder()
-      .setTitle(`登録しました。`)
-      .addFields(
-        { name: "変換元", value: `${word_from}`},
-        { name: "変換先", value: `${word_to}`},
-      );
-
-    await interaction.reply({ embeds: [em] });
-  }
-
-
-  async dicdel(interaction){
-    const guild_id = interaction.guild.id;
-
-    const connection = connections_map.get(guild_id);
-
-    const server_file = bot_utils.get_server_file(guild_id);
-    let dict = server_file.dict;
-
-    const target = interaction.options.get("target").value;
-
-    let exist = false;
-
-    for(let d of dict){
-      if(d[0] === target){
-        exist = true;
-        break;
-      }
-    }
-
-    if(!exist){
-      await interaction.reply({ content: "ないよ" });
-      return;
-    }
-
-    dict = dict.filter(word => word[0] !== target);
-
-    bot_utils.write_serverinfo(guild_id, server_file, { dict: dict });
-
-    if(connection) connection.dict = dict;
-
-    await interaction.reply({ content: "削除しました。" });
-  }
-
-  async dicedit(interaction){
-    const guild_id = interaction.guild.id;
-
-    const connection = connections_map.get(guild_id);
-
-    const server_file = bot_utils.get_server_file(guild_id);
-    let dict = server_file.dict;
-
-    const word_from = interaction.options.get("from").value;
-    const word_to = interaction.options.get("to").value;
-
-    let exist = false;
-
-    for(let d of dict){
-      if(d[0] === word_from){
-        exist = true;
-        break;
-      }
-    }
-
-    if(!exist){
-      await interaction.reply({ content: "ないよ" });
-      return;
-    }
-
-    dict = dict.map(val => {
-      let result = val;
-      if(val[0] === word_from) result[1] = word_to;
-
-      return result;
-    });
-
-    bot_utils.write_serverinfo(guild_id, server_file, { dict: dict });
-
-    if(connection) connection.dict = dict;
-
-    const em = new EmbedBuilder()
-      .setTitle(`編集しました。`)
-      .addFields(
-        { name: "変換元", value: `${word_from}`},
-        { name: "変換先", value: `${word_to}`},
-      );
-
-    await interaction.reply({ embeds: [em] });
-  }
-
-  async dicpriority(interaction){
-    const guild_id = interaction.guild.id;
-
-    const connection = connections_map.get(guild_id);
-
-    const server_file = bot_utils.get_server_file(guild_id);
-    let dict = server_file.dict;
-
-    const target = interaction.options.get("target").value;
-    const priority = interaction.options.get("priority").value;
-
-    let exist = false;
-
-    for(let d of dict){
-      if(d[0] === target){
-        exist = true;
-        break;
-      }
-    }
-
-    if(!exist){
-      await interaction.reply({ content: "ないよ" });
-      return;
-    }
-
-    dict = dict.map(val => {
-      let result = val;
-      if(val[0] === target) result[2] = priority;
-
-      return result;
-    });
-
-    bot_utils.write_serverinfo(guild_id, server_file, { dict: dict });
-
-    if(connection) connection.dict = dict;
-
-    const em = new EmbedBuilder()
-      .setTitle(`設定しました。`)
-      .addFields(
-        { name: "単語", value: `${target}`},
-        { name: "優先度", value: `${priority_list[priority]}`},
-      );
-
-    await interaction.reply({ embeds: [em] });
-  }
-
-  async systemvoicemute(interaction){
-    const connection = connections_map.get(interaction.guild.id);
-
-    if(!connection){
-      await interaction.reply("接続がないよ！");
-      return;
-    }
-
-    connection.system_mute_counter++;
-
-    await interaction.reply(`${connection.system_mute_counter}回システムボイスをミュートするよ`);
-  }
 
   async copyvoicesay(interaction){
     const guild_id = interaction.guild.id;
 
-    const connection = connections_map.get(guild_id);
+    const connection = global.connections_map.get(guild_id);
 
     if(!connection){
       await interaction.reply({ content: "接続ないよ" });
@@ -1068,7 +889,7 @@ module.exports = class App{
 \`\`\`ansi
 ${cyan}API Ping${gray}:${reset} ${client.ws.ping} ms
 ${cyan}メモリ${gray}:${reset} ${ram} MB / ${total_ram} MB
-${cyan}現在接続数${gray}:${reset} ${connections_map.size}
+${cyan}現在接続数${gray}:${reset} ${global.connections_map.size}
 
 ${cyan}サーバー数${gray}:${reset} ${this.status.connected_servers}
 ${cyan}利用可能なボイス数${gray}:${reset} ${this.voice_list.length}
