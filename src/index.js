@@ -10,7 +10,6 @@ const {
   EmbedBuilder, ActivityType, Collection
 } = require('discord.js');
 const fs = require('fs');
-const os = require('os');
 const { isRomaji, toKana } = require('wanakana');
 const log4js = require('log4js');
 
@@ -41,7 +40,7 @@ const client = new Client({
 
 client.commands = new Collection();
 
-const voicevox = new Voicevox();
+global.voicevox = new Voicevox();
 
 let logger = log4js.getLogger();
 const bot_utils = new BotUtils(logger);
@@ -62,7 +61,7 @@ const {
 module.exports = class App{
   constructor(){
 //    this.remote_repalce = new RemoteReplace();
-    this.voicevox = voicevox;
+    this.voicevox = global.voicevox;
     this.voice_list = [];
     this.dictionaries = [];
     this.dict_regexp = null;
@@ -110,7 +109,7 @@ module.exports = class App{
   }
 
   async setup_voicevox(){
-    await voicevox.check_version();
+    await this.voicevox.check_version();
     const voiceinfos = await this.get_voicelist();
     this.voice_list = voiceinfos.speaker_list;
     voice_library_list = voiceinfos.voice_library_list;
@@ -123,7 +122,7 @@ module.exports = class App{
     const tmp_voice = { speed: 1, pitch: 0, intonation: 1, volume: 1 };
 
     try{
-      await voicevox.synthesis("てすと", `test${TMP_PREFIX}.wav`, 0, tmp_voice);
+      await this.voicevox.synthesis("てすと", `test${TMP_PREFIX}.wav`, 0, tmp_voice);
     }catch(e){
       logger.info(e);
     }
@@ -284,7 +283,6 @@ module.exports = class App{
         case "currentvoice":
         case "resetconnection":
         case "copyvoicesay":
-        case "info":
           if(command_name === "connect") command_name = "connect_vc";
           await this[command_name](interaction);
           break;
@@ -310,6 +308,7 @@ module.exports = class App{
             await this.setvoice(interaction, 'voice');
           }else{
             if (command_name === "credit") await command.execute(interaction, voice_library_list);
+            if (command_name === "info") await command.execute(interaction, this);
             await command.execute(interaction);
           }
           break;
@@ -469,7 +468,7 @@ module.exports = class App{
     logger.debug(`voicedata: ${JSON.stringify(voice_data)}`);
 
     try{
-      const voice_path = await voicevox.synthesis(text_data.text, connection.filename, voice.voice, voice_data);
+      const voice_path = await this.voicevox.synthesis(text_data.text, connection.filename, voice.voice, voice_data);
 
       let opus_voice_path;
 
@@ -678,7 +677,7 @@ module.exports = class App{
   }
 
   async get_voicelist(){
-    const list = await voicevox.speakers();
+    const list = await this.voicevox.speakers();
 
     const speaker_list = [];
     const lib_list = [];
@@ -871,55 +870,5 @@ module.exports = class App{
     this.add_text_queue(msg_obj, true);
 
     await interaction.reply({ content: "まかせて！" });
-  }
-
-  async info(interaction){
-    const server_file = bot_utils.get_server_file(interaction.guild.id);
-
-    const ram = Math.round(process.memoryUsage.rss() / 1024 / 1024 * 100) / 100;
-    const total_ram = Math.round(os.totalmem() / (1024 * 1024));
-
-    const cyan = "\x1b[1;36m";
-    const gray = "\x1b[1;30m";
-    const reset = "\x1b[1;0m";
-
-    const em = new EmbedBuilder()
-      .setTitle(`Infomations`)
-      .setDescription(`
-\`\`\`ansi
-${cyan}API Ping${gray}:${reset} ${client.ws.ping} ms
-${cyan}メモリ${gray}:${reset} ${ram} MB / ${total_ram} MB
-${cyan}現在接続数${gray}:${reset} ${global.connections_map.size}
-
-${cyan}サーバー数${gray}:${reset} ${this.status.connected_servers}
-${cyan}利用可能なボイス数${gray}:${reset} ${this.voice_list.length}
-\`\`\`
-      `)
-      .addFields(
-        {
-          name: "Bot設定",
-          value: `
-\`\`\`ansi
-${cyan}Opus変換${gray}:${reset} ${ans(this.status.opus_convert_available && this.config.opus_convert.enable, "有効", "無効")}
-${cyan}英語辞書変換${gray}:${reset} ${ans(this.status.remote_replace_available, "有効", "無効")}
-${cyan}サーバー辞書単語数${gray}:${reset} ${this.dictionaries.length}
-\`\`\`
-          `,
-          inline: true
-        },
-      ).addFields(
-        {
-          name: "サーバー設定",
-          value: `
-\`\`\`ansi
-${cyan}辞書単語数${gray}:${reset} ${server_file.dict.length}
-${cyan}ボイス登録数${gray}:${reset} ${Object.keys(server_file.user_voices).length}
-\`\`\`
-          `,
-          inline: true
-        }
-      )
-
-    await interaction.reply({ embeds: [em] });
   }
 }

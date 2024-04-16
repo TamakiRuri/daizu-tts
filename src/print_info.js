@@ -61,11 +61,12 @@ module.exports = (app) => {
   const commit_time = get_commit_time();
 
   console.log(`\n`);
+  console.log('Daizu TTS\n');
 
-  console.log(`    ${bg_white}  ${fg_green}_  _ ____ _ ____ ____ _  _ ____ _  _    ___ ___ ____  ${reset}`);
-  console.log(`    ${bg_white}  ${fg_green}|  | |  | | |    |___ |  | |  |  \\/      |   |  [__   ${reset}`);
-  console.log(`    ${bg_white}  ${fg_green} \\/  |__| | |___ |___  \\/  |__| _/\\_     |   |  ___]  ${reset}`);
-  console.log(`    ${bg_white}                                                        ${bg_default}`);
+  //console.log(`    ${bg_white}  ${fg_green}_  _ ____ _ ____ ____ _  _ ____ _  _    ___ ___ ____  ${reset}`);
+  //console.log(`    ${bg_white}  ${fg_green}|  | |  | | |    |___ |  | |  |  \\/      |   |  [__   ${reset}`);
+  //console.log(`    ${bg_white}  ${fg_green} \\/  |__| | |___ |___  \\/  |__| _/\\_     |   |  ___]  ${reset}`);
+ // console.log(`    ${bg_white}                                                        ${bg_default}`);
   console.log("");
 
   branch && console.log(`${indent}${fg_blue}branch:          ${fg_default}  ${branch}`);
