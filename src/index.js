@@ -47,6 +47,9 @@ const bot_utils = new BotUtils(logger);
 
 global.connections_map = new Map();
 
+global.channelMap = new Map();
+global.vcTimeMap = new Map();
+
 let voice_library_list = [];
 
 
@@ -188,6 +191,17 @@ module.exports = class App{
       setvoice_commands.push(setvoice_command);
     }
 
+    // Read event handlers from ./events
+  const eventFiles = fs.readdirSync('./events').filter(file => file.endsWith('.js'));
+  for (const file of eventFiles) {
+	  const event = require(`../events/${file}`);
+	  if (event.once) {
+		  client.once(event.name, (...args) => event.execute(...args));
+	  } else {
+		  client.on(event.name, (...args) => event.execute(...args));
+	  }
+  }
+
     client.on('ready', async () => {
       // コマンド登録
       let data = [];
@@ -316,7 +330,7 @@ module.exports = class App{
     } catch (error) {
       logger.info(error);
       try{
-        await interaction.reply({ content: 'そんなコマンドないよ。' });
+        await interaction.reply({ content: 'コマンドを実行するときにエラーが発生しました', ephemeral: true });
       }catch(e){
         // 元のインタラクションないのは知らない…
       }
@@ -524,11 +538,21 @@ module.exports = class App{
   }
 
 
-  async connect_vc(interaction){
+// BAD IMPLEMENTATION
+// いまではinteractionとVOICESTATEを共有することになっております！
+// NEED IMPROVEMENT
+
+  async connect_vc(interaction, auto=false){
     const guild = interaction.guild;
     const member = await guild.members.fetch(interaction.member.id);
-    const member_vc = member.voice.channel;
 
+    let voice_channel_id  = null;
+
+    if (auto){
+      voice_channel_id = interaction.channel.id;
+    }
+    else {
+    const member_vc = member.voice.channel;
     if(!member_vc){
       await interaction.reply({ content: "接続先のVCが見つかりません。" });
       return;
@@ -541,8 +565,10 @@ module.exports = class App{
       await interaction.reply({ content: "VCで音声を再生する権限がありません。" });
       return;
     }
+    voice_channel_id = member_vc.id;
+  }
 
-    const voice_channel_id = member_vc.id;
+    //const voice_channel_id = member_vc.id;
     const guild_id = guild.id;
 
     const current_connection = global.connections_map.get(guild_id);
@@ -551,9 +577,15 @@ module.exports = class App{
       await interaction.reply({ content: "接続済みです。" });
       return;
     }
+    const serverFile = bot_utils.get_server_file(interaction.guild.id);
+    let text_channel=null;
+    if (auto&&serverFile.channelpair!==null){
+        text_channel = serverFile.channelpair;
+      }
+    else  text_channel = interaction.channel.id;
 
     const connectinfo = {
-      text: interaction.channel.id,
+      text: text_channel,
       voice: voice_channel_id,
       audio_player: null,
       queue: [],
@@ -617,6 +649,7 @@ module.exports = class App{
     global.connections_map.set(guild_id, connectinfo);
 
     if(!this.status.debug){
+      if (!auto)
       await interaction.reply({ content: '接続しました。' });
       this.add_system_message("接続しました！", guild_id);
     }
@@ -626,9 +659,18 @@ module.exports = class App{
 
   check_join_and_leave(old_s, new_s){
     const guild_id = new_s.guild.id;
-    // 接続ないなら抜ける
+    //接続してないときに接続する 
     const connection = global.connections_map.get(guild_id);
-    if(!connection) return;
+    const serverFile = bot_utils.get_server_file(guild_id);
+    if (serverFile){
+    if(!connection&&serverFile.autojoin&&new_s.channel!=null){
+      this.connect_vc(new_s, true);
+      return;
+    }
+  }
+  if (!connection){
+    return;
+  }
 
     const member = new_s.member;
     if(member.user.bot) return;

@@ -15,6 +15,9 @@ const DEFAULT_SETTING = {
     DEFAULT: { voice: 1, speed: 100, pitch: 100, intonation: 100, volume: 100 }
   },
   dict: [["Discord", "でぃすこーど", 2]],
+  autojoin: false,
+  text: null ,
+  channelpair: null,
 }
 const SETTING_LISTS = Object.keys(DEFAULT_SETTING);
 

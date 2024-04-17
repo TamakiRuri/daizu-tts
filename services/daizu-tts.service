@@ -1,5 +1,5 @@
 [Unit]
-Description=daizu-tts daemon
+Description=daizu tts daemon
 After=voicevox.service
 Requires=voicevox.service
 
@@ -8,7 +8,7 @@ Type=simple
 User=YOUR_USERNAME
 ExecStartPre=/usr/bin/sleep 5
 ExecStart=/usr/bin/npm run production
-WorkingDirectory=/home/YOUR_USERNAME/Daizu-tts/
+WorkingDirectory=/home/YOUR_USERNAME/daizu-tts/
 TimeoutSec=60
 Restart=always
 

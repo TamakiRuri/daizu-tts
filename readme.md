@@ -1,4 +1,4 @@
-# Daizu-tts
+# daizu-tts
 
 Voicevoxを利用した小規模向けのシンプルなDiscord読み上げボット
 
@@ -10,7 +10,28 @@ Voicevoxを利用した小規模向けのシンプルなDiscord読み上げボ�
 
 voicevox-tts-discord のフォークです
 
+This is a fork of voice-tts-discord
+
 元のプロジェクトと比べてkagome front、remote replaceとGoを使用しない
+
+## 機能
+
+1. 指定したチャンネルのテキストを読み上げる
+2. ボイチャが始まったときの通知と自動入室
+3. 入室、退室通知（読み上げのみ）
+4. ユーザー辞書、グローバル辞書
+
+## WIP
+
+SQLiteの導入
+
+Refactor
+
+## Licenses
+
+元のプロジェクトから引き継いたコードはすべてBSD-3-Clause Licenseです。
+
+RuriSapphireによって書かれたコードはすべてMIT Licenseです。
 
 ## 必要なもの
 
@@ -21,10 +42,12 @@ voicevox-tts-discord のフォークです
 5. Discord APIのトークン
 6. FFmpeg
 
-## あるといい
+<!--
 
-1. メモリ上に乗ったキャッシュ用ディレクトリ
+1. メモリ上に乗ったキャッシュ用ディレクトリがあると良い
     - Linuxなら/tmpで良い気がする
+
+-->
 
 ## 動かし方
 
@@ -43,31 +66,31 @@ voicevox-tts-discord のフォークです
     > Bot Permissions: Read Messages / View Channels, Send Messages, Connect, Speak
 
     5. `Bot`→`Add Bot`でBotになる
-    6. `Build-A-Bot`の`Reset Token`を押してトークンを生成する、生成されたらメモっとく(Botトークン)
+    6. `Build-A-Bot`の`Reset Token`を押してトークンを生成する、生成されたらメモっておく(Botトークン)
     7. その下の`MESSAGE CONTENT INTENT`を有効にする
 2. Voicevox Engineを入れる
     1. [Voicevoxの公式](https://voicevox.hiroshiba.jp/ )から自分の環境に合ったやつをダウンロードしてくる(Engineのリポジトリが最新じゃないのでフル版のEngine部分だけ使う)
-    2. `run`って書いてるやつ実行する(環境によって違うけど概ねrunだけのやつが正解)、`--port`でポート指定しておくと楽
+    2. `run`を実行する(違う名前になる場合があります)`--port`でポート指定してください(わからない場合は `--port 2970` )。同じコンソールでVoicevoxとdaizu-ttsを動かしたいときには、最後に&をつけます。
 3. 環境を整える
     1. 好きな方法でNode.jsとpnpmを入れる(Node.js v20以上が必要です) 
     2. 好きな方法でGitを入れる
     3. 好きな方法でFFmpegを入れる(Linuxならパッケージマネージャーから入れるといい)
 4. そろそろ動かしたい
-    1. `git clone https://github.com/TamakiRuri/Daizu-tts.git; cd Daizu-tts`
+    1. `git clone https://github.com/TamakiRuri/daizu-tts.git; cd daizu-tts`
     2. `cp sample.json config.json`
     3. config.jsonを編集する
         - `VOICEVOX_ENGINE`は2970を自分の指定したポートに合わせる
-        - `TMP_DIR`は音声のキャッシュディレクトリ、頻繁に書き換わるのでメモリ上のほうが良いかも
+        - `TMP_DIR`は音声のキャッシュディレクトリ、頻繁に書き換わるのでシステムのメモリ上で保存するキャッシュメモリが好ましい
         - `TOKEN`は上でメモったBotトークン
-        - `PREFIX`はそれで始まる文章は読まないやつ
+        - `PREFIX`は読み上げない文章につけるプリフィックス
         - `SERVER_DIR`はサーバーごとの設定ファイルが保存されるディレクトリ、そのまま使うなら`servers`ってフォルダを作ること
-        - ~~`REMOTE_REPLACE_HOST`は[replace http](https://github.com/notoiro/replace_http )を利用する場合のサーバーアドレス~~
-        - `OPUS_CONVERT`はOpusへの変換機能の設定。`enable`以外の設定はわかってる人向け。
-        - ~~`DICT_DIR`はKagomeのトークン単位のグローバル辞書を保存するディレクトリ、そのまま使うなら`dictionaries`ってフォルダを作ること~~
+        - ~~`REMOTE_REPLACE_HOST`は[replace http](https://github.com/notoiro/replace_http )を利用する場合のサーバーアドレス~~　（すでに無効、次のバージョンで削除）
+        - `OPUS_CONVERT`はOpus(オープンソースな音声フォーマット)(BSD-3License)への変換機能の設定です。`bitrate`はビットレート、`threads`はスレッド数です。
+        - `DICT_DIR`はグローバル辞書を保存するディレクトリ、そのまま編集することで使えます。
     4. `pnpm install`
-    5. `npm run production`
-    6. 上でメモった招待用のURLで招待する
-    7. [SystemdのServiceのサンプル](https://github.com/notoiro/voicevox-tts-discord/tree/master/services )があるのでお好みで
+    5. `npm run production` npmですがpnpmでも動かせます。
+    6. 招待用のURLで招待します。
+    7. SystemdのServiceのサンプルは/servicesに保存されています。
 
 ## 使い方
 
@@ -78,6 +101,17 @@ voicevox-tts-discord のフォークです
     /help  //ヘルプ
 
 ```
+
+## Update Log
+
+#### 0.2.0
+
+- ボイチャ検知と自動入室を追加しました。
+- 自動入室した場合、デフォルトではそのテキストチャンネルのみを読み上げます。
+- ` /setchannelpair`でサーバーのデフォルト読み上げチャンネルを変更します。
+- 今後、`/setchannelpair`をサーバー全体ではなく、一つのボイスチャンネルとその対応するテキストチャンネルを設定できるようにします。
+
+> もし問題がありましたら、issueで書いてくれると助かります。
 
 <!--
 ## dictionaries以下のファイルについて

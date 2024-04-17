@@ -1,4 +1,5 @@
 /node_modules/
 /servers/
-/dictionaries/
+/dictionaries/*
+!/dictionaries/globaldict.json
 /config.json
