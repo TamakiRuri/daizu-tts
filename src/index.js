@@ -191,7 +191,7 @@ module.exports = class App{
       setvoice_commands.push(setvoice_command);
     }
 
-    // Read event handlers from ./events
+    // ./eventsから追加のイベントハンドルを読み込む
   const eventFiles = fs.readdirSync('./events').filter(file => file.endsWith('.js'));
   for (const file of eventFiles) {
 	  const event = require(`../events/${file}`);
@@ -568,7 +568,6 @@ module.exports = class App{
     voice_channel_id = member_vc.id;
   }
 
-    //const voice_channel_id = member_vc.id;
     const guild_id = guild.id;
 
     const current_connection = global.connections_map.get(guild_id);
@@ -659,7 +658,7 @@ module.exports = class App{
 
   check_join_and_leave(old_s, new_s){
     const guild_id = new_s.guild.id;
-    //接続してないときに接続する 
+    //接続ないときに接続する 
     const connection = global.connections_map.get(guild_id);
     const serverFile = bot_utils.get_server_file(guild_id);
     if (serverFile){

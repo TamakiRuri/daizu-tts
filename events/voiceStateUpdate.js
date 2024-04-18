@@ -1,5 +1,9 @@
 // MIT License 2024 RuriSapphire
 
+// ボイスチャット検知のeventです。自動接続のeventはindex.jsにあります。
+
+// 流れ: voiceStateUpdate > ユーザー数判断 > 時間カウント開始・終了 > メッセージ送信
+
 const {ChannelType, PermissionFlagsBits} = require('discord.js');
 
 const log4js = require('log4js');

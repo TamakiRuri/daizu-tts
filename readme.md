@@ -95,6 +95,8 @@ RuriSapphireによって書かれたコードはすべてMIT Licenseです。
 ## 使い方
 
 ```
+    /autojoin //自動接続・ボイスチャット検知トグル
+    /setchannel //ボイスチャット検知の通知チャンネルを設定する
     /connect  //ボイスチャットに接続
     /disconnect  //ボイスチャットから切断
     /setvoice  //話者を変更(選択肢の上限が25のため、4つに分けられています)
