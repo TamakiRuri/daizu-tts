@@ -2,13 +2,14 @@ const os = require('os');
 const { execSync } = require('child_process');
 
 const {
-  SERVER_DIR, TMP_DIR, VOICEVOX_ENGINE, REMOTE_REPLACE_HOST, DICT_DIR
+  SERVER_DIR, TMP_DIR, VOICEVOX_ENGINE, DICT_DIR
 } = require('../config.json');
 
 const indent = "          ";
 const fg_default = "\x1b[1;39m";
 const fg_green = "\x1b[38:5:107m";
 const fg_blue = "\x1b[38:5:159m";
+const fg_bluee= "\x1b[1;34m";
 const fg_white = "\x1b[38:5:15m";
 
 const bg_default = "\x1b[1;49m";
@@ -61,7 +62,7 @@ module.exports = (app) => {
   const commit_time = get_commit_time();
 
   console.log(`\n`);
-  console.log('Daizu TTS\n');
+  console.log(`    ${fg_bluee}Daizu TTS\n${reset}`);
 
   //console.log(`    ${bg_white}  ${fg_green}_  _ ____ _ ____ ____ _  _ ____ _  _    ___ ___ ____  ${reset}`);
   //console.log(`    ${bg_white}  ${fg_green}|  | |  | | |    |___ |  | |  |  \\/      |   |  [__   ${reset}`);
@@ -90,7 +91,6 @@ module.exports = (app) => {
     console.log(`${indent}${fg_blue}  bitrate:       ${fg_default}  ${app.config.opus_convert.bitrate}`);
     console.log(`${indent}${fg_blue}  threads:       ${fg_default}  ${app.config.opus_convert.threads} core`);
   }
-  console.log(`${indent}${fg_blue}replace host:    ${fg_default}  ${REMOTE_REPLACE_HOST}`);
   console.log(`${indent}${fg_blue}extend:          ${fg_default}  ${ans(app.status.extend_enabled, 'enabled', 'disabled')}`);
 
   console.log("");
@@ -100,7 +100,6 @@ module.exports = (app) => {
   console.log(`${indent}${fg_blue}voice count:     ${fg_default}  ${app.voice_list.length} voices`);
   console.log(`${indent}${fg_blue}dict word count: ${fg_default}  ${app.dictionaries.length}`);
   console.log(`${indent}${fg_blue}pre opus convert:${fg_default}  ${ans(app.status.opus_convert_available, "available", "unavailable")}`);
-  console.log(`${indent}${fg_blue}remote replace:  ${fg_default}  ${ans(app.status.remote_replace_available, "available", "unavailable")}`);
   console.log(`\n`);
 
   console.log(`${indent}Ready in as ${fg_green}${app.status.discord_username}${reset}!`);

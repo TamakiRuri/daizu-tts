@@ -14,7 +14,6 @@ const { isRomaji, toKana } = require('wanakana');
 const log4js = require('log4js');
 
 const Voicevox = require('./voicevox.js');
-//const RemoteReplace = require('./remote_replace.js');
 const ResurrectionSpell = require('./resurrection_spell.js');
 const Utils = require('./utils.js');
 const BotUtils = require('./bot_utils.js');
@@ -63,8 +62,7 @@ const {
 
 module.exports = class App{
   constructor(){
-//    this.remote_repalce = new RemoteReplace();
-    this.voicevox = global.voicevox;
+     this.voicevox = global.voicevox;
     this.voice_list = [];
     this.dictionaries = [];
     this.dict_regexp = null;
@@ -78,7 +76,6 @@ module.exports = class App{
       connected_servers: 0,
       discord_username: "NAME",
       opus_convert_available: false,
-      remote_replace_available: false,
       extend_enabled: bot_utils.EXTEND_ENABLE
     };
 
@@ -92,7 +89,6 @@ module.exports = class App{
     await this.setup_voicevox();
     await this.test_opus_convert();
     this.setup_dictionaries();
-    //await this.test_remote_replace();
     this.setup_discord();
     this.setup_process();
 
@@ -141,24 +137,6 @@ module.exports = class App{
       this.status.opus_convert_available = false;
     }
   }
-
-  // 利用可能かテストする
-  /*
-  async test_remote_replace(){
-    if(!this.remote_repalce.enabled){
-      this.status.remote_replace_available = false;
-      return;
-    }
-    try{
-      await this.remote_repalce.replace_http('A person who destroys a submarine telegraph line in order to protect his own life or ship, or in order to lay or repair a submarine telegraph line, shall notify the telegraph office or the Imperial Consulate immediately by wireless telegraphy, and if wireless telegraphy is not possible, shall notify the local telegraph office or the Imperial Consulate within 24 hours of the first landing of the ship. Any person who violates the provisions of the preceding paragraph shall be fined not more than 200 yen.');
-      this.status.remote_replace_available = true;
-    }catch(e){
-      logger.info(e);
-      this.status.remote_replace_available = false;
-    }
-  }
-  */
-
 
   setup_discord(){
     // コマンド取得
@@ -578,8 +556,8 @@ module.exports = class App{
     }
     const serverFile = bot_utils.get_server_file(interaction.guild.id);
     let text_channel=null;
-    if (auto&&serverFile.channelpair!==null){
-        text_channel = serverFile.channelpair;
+    if (auto&&serverFile.textchannel!==null){
+        text_channel = serverFile.textchannel;
       }
     else  text_channel = interaction.channel.id;
 

@@ -11,12 +11,12 @@ const bot_utils = new BotUtils(logger);
 
 module.exports = {
     data:{
-        name: 'setchannelpair',
-        description: '読み上げるチャンネルを設定する',
+        name: 'settextchannel',
+        description: 'サーバー全体の読み上げチャンネルを設定する',
     },
     async execute(interaction){
         const serverFile = bot_utils.get_server_file(interaction.guildId);
-        bot_utils.write_serverinfo(interaction.guildId, serverFile, {channelpair:interaction.channel.id});
+        bot_utils.write_serverinfo(interaction.guildId, serverFile, {textchannel:interaction.channel.id});
         let connection = global.connections_map.get(interaction.guildId);
         if (connection)connection.text = interaction.channelId;
         //console.log('Command \' SetChannel \' used in Server '+ interaction.guild.toString() + ' ID :' + global.channelMap.get(interaction.guildId).channelId);

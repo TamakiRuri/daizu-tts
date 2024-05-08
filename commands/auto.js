@@ -8,7 +8,7 @@ const bot_utils = new BotUtils(logger);
 
 module.exports = {
     data:{
-        name: 'autojoin',
+        name: 'auto',
         description: '自動入室を有効/無効にする',
     },
     async execute(interaction){

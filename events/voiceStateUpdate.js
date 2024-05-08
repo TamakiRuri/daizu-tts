@@ -103,7 +103,7 @@ module.exports={
         }
         if (startChannel.channel!=null && endChannel.channel!=null){
             //console.log('Moved');
-            if (bot_utils.get_server_file(endChannel.guild.id).autojoin===false) return;
+            if (bot_utils.get_server_file(endChannel.guild.id).autojoin===false || bot_utils.get_server_file(endChannel.guild.id).text===null) return;
             if(endChannel.channel.members.size<=1){
                 this.countEnd(endChannel);
             }

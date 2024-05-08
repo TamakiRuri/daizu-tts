@@ -4,7 +4,6 @@
   "TOKEN": "YOUR_DISCORD_TOKEN",
   "PREFIX": ";",
   "SERVER_DIR": "./servers",
-  "REMOTE_REPLACE_HOST": "",
   "OPUS_CONVERT": {
     "enable": false,
     "bitrate": "96k",
