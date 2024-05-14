@@ -34,7 +34,7 @@ module.exports={
                         value: stat.member.displayName,
                     },
                     {
-                        name: 'いまの時間',
+                        name: '現在時間',
                         value: dTime.toTimeString(),
                     }
                 ]
@@ -69,14 +69,25 @@ module.exports={
             startTime: new Date(),
         }
         global.vcTimeMap.set(startChannel.channelId, vcStatus);
-        this.timeMessage(vcStatus.startTime, 'start', startChannel);
+        if (global.vcServerMap.get(startChannel.guildId) == null|| Date.now() - global.vcServerMap.get(startChannel.guildId)>60000){
+            this.timeMessage(vcStatus.startTime, 'start', startChannel);
+            global.vcServerMap.set(startChannel.guildId, Date.now());
+        }
+        else global.vcServerMap.set(startChannel.guildId, Date.now());
     },
     countEnd(endChannel){
         //console.log('The voice chat in ' + endChannel.guild.toString() + ' ended');
         let endTime = new Date();
-        if (global.vcTimeMap.get(endChannel.channelId)=== undefined)return;
+        if (global.vcTimeMap.get(endChannel.channelId)== undefined)return;
         let timeDiff = endTime - global.vcTimeMap.get(endChannel.channelId).startTime;
-        this.timeMessage(timeDiff, 'end', endChannel);
+        // スパム防止のため時間を記録し、短すぎるときに通知を行わなくなります（countStartにもあります）(ms)
+        if (global.vcServerMap.get(endChannel.guildId) == null || Date.now() - global.vcServerMap.get(endChannel.guildId)>60000){
+            this.timeMessage(timeDiff, 'end', endChannel);
+            global.vcServerMap.set(endChannel.guildId, null);
+        }
+        else global.vcServerMap.set(endChannel.guildId, Date.now());
+        //console.log(Date.now() - global.vcServerMap.get(endChannel.guildId));
+        global.vcTimeMap.set(endChannel.channelId, null);
     },
     async execute(endChannel, startChannel){
         if(!startChannel && !endChannel){
@@ -92,7 +103,7 @@ module.exports={
             }
             return;
         }
-        if (startChannel.channel!=null && endChannel.channel==null){
+        else if (startChannel.channel!=null && endChannel.channel==null){
             //console.log('Joined');
             if (bot_utils.get_server_file(startChannel.guild.id).autojoin===false) return;
             if(startChannel.channel.members.size==1){
@@ -101,13 +112,13 @@ module.exports={
             }
             return;
         }
-        if (startChannel.channel!=null && endChannel.channel!=null){
+        else if (startChannel.channel!=null && endChannel.channel!=null){
             //console.log('Moved');
             if (bot_utils.get_server_file(endChannel.guild.id).autojoin===false || bot_utils.get_server_file(endChannel.guild.id).text===null) return;
             if(endChannel.channel.members.size<=1){
                 this.countEnd(endChannel);
             }
-            if(startChannel.channel.members.size==1){
+            if(startChannel.channel.members.size===1){
                 this.countStart(startChannel);
             }
             return;

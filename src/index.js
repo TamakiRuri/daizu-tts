@@ -48,6 +48,7 @@ global.connections_map = new Map();
 
 global.channelMap = new Map();
 global.vcTimeMap = new Map();
+global.vcServerMap = new Map();
 
 let voice_library_list = [];
 
@@ -62,7 +63,7 @@ const {
 
 module.exports = class App{
   constructor(){
-     this.voicevox = global.voicevox;
+    this.voicevox = global.voicevox;
     this.voice_list = [];
     this.dictionaries = [];
     this.dict_regexp = null;
