@@ -3,18 +3,18 @@ const { ApplicationCommandOptionType } = require('discord.js');
 module.exports = {
   data: {
     name: "copyvoicesay",
-    description: "お前の声は俺の声",
+    description: "他人のボイス設定を使って読み上げる",
     options: [
       {
         type: ApplicationCommandOptionType.User,
         name: "user",
-        description: "キミにきめた!",
+        description: "ユーザー",
         required: true
       },
       {
         type: ApplicationCommandOptionType.String,
         name: "text",
-        description: "好き勝手言おう",
+        description: "内容",
         required: true,
         min_length: 1
       }

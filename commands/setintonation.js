@@ -3,7 +3,7 @@ const { ApplicationCommandOptionType } = require('discord.js');
 module.exports = {
     data: {
       name: "setintonation",
-      description: "声のイントネーションを設定します。",
+      description: "声のイントネーションを設定します。(デフォルト: 100)",
       options: [
         {
           type: ApplicationCommandOptionType.Integer,

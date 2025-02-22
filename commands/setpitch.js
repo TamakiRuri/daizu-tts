@@ -3,7 +3,7 @@ const { ApplicationCommandOptionType } = require('discord.js');
 module.exports = {
     data: {
       name: "setpitch",
-      description: "声のピッチを設定します。",
+      description: "声のピッチを設定します。(デフォルト:100)",
       options: [
         {
           type: ApplicationCommandOptionType.Integer,

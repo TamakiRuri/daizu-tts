@@ -3,7 +3,7 @@ const { ApplicationCommandOptionType } = require('discord.js');
 module.exports = {
     data: {
       name: "setspeed",
-      description: "声の速度を設定します。",
+      description: "声の速度を設定します。(デフォルト: 100)",
       options: [
         {
           type: ApplicationCommandOptionType.Integer,
