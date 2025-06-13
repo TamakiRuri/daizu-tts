@@ -6,9 +6,9 @@ Voicevoxを利用した小規模向けのシンプルなDiscord読み上げボ�
 >
 > This project is intended only for Japanese TTS. Other languages, including English, are **NOT** supported.
 
-voicevox-tts-discord のフォークです
+[voicevox-tts-discord](https://github.com/notoiro/voicevox-tts-discord) のフォークです (現kana)
 
-This is a fork of voice-tts-discord
+This is a fork of voice-tts-discord (an older version of kana)
 
 元のプロジェクトと比べてkagome front、remote replaceとGoを使用せず、セットアップがよりシンプルになっています。
 
