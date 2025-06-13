@@ -98,7 +98,8 @@ RuriSapphireによって書かれたコードはすべてMIT License (c) RuriSap
 ```
     /start //初めて利用する時のチュートリアル
     /auto //自動接続・ボイスチャット検知有効/無効
-    /setchannel //ボイスチャット検知の通知チャンネルを現在のチャンネルに設定
+    /setnotifychannel //ボイスチャット検知の通知チャンネルを現在のチャンネルに設定
+    /resetnotifychannel //通知を無効にする
     /connect  //ボイスチャットに接続
     /disconnect  //ボイスチャットから切断
     /setvoice  //話者を変更(選択肢の上限が25のため、4つに分けられています)
