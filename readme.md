@@ -6,9 +6,9 @@ Voicevoxを利用した小規模向けのシンプルなDiscord読み上げボ�
 >
 > This project is intended only for Japanese TTS. Other languages, including English, are **NOT** supported.
 
-voicevox-tts-discord のフォークです
+[voicevox-tts-discord](https://github.com/notoiro/voicevox-tts-discord) のフォークです (現kana)
 
-This is a fork of voice-tts-discord
+This is a fork of voice-tts-discord (an older version of kana)
 
 元のプロジェクトと比べてkagome front、remote replaceとGoを使用せず、セットアップがよりシンプルになっています。
 
@@ -105,7 +105,8 @@ RuriSapphireによって書かれたコードはすべてMIT License (c) RuriSap
 ```
     /start //初めて利用する時のチュートリアル
     /auto //自動接続・ボイスチャット検知有効/無効
-    /setchannel //ボイスチャット検知の通知チャンネルを現在のチャンネルに設定
+    /setnotifychannel //ボイスチャット検知の通知チャンネルを現在のチャンネルに設定
+    /resetnotifychannel //通知を無効にする
     /connect  //ボイスチャットに接続
     /disconnect  //ボイスチャットから切断
     /setvoice  //話者を変更(選択肢の上限が25のため、4つに分けられています)

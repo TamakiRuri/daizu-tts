@@ -9,6 +9,6 @@ module.exports = {
 
     const connection = getVoiceConnection(guild.id);
     connection.destroy();
-    await interaction.reply({ content: 'さよなら…' });
+    await interaction.reply({ content: '切断しました。' });
   },
 }

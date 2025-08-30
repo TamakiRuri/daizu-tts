@@ -14,7 +14,11 @@ module.exports={
                 },
                 {
                     name:'ボイスチャット検知の送信チャンネルを設定すると便利です。',
-                    value:`/setchannel`
+                    value:`/setnotifychannel`
+                },
+                {
+                    name:'もし間違えて設定した場合ではこちらのコマンドで無効にできます。',
+                    value:`/resetnotifychannel`
                 },
                 {
                     name:'もし読み上げるチャンネルを設定したい場合ではこのコマンドを使います。設定しない場合はボイスチャンネル付属のテキストチャンネルを読み上げます。',

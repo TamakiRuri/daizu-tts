@@ -17,6 +17,7 @@ const DEFAULT_SETTING = {
   dict: [["Discord", "でぃすこーど", 2]],
   autojoin: false,
   text: null ,
+  notify: false,
   textchannel: null,
 }
 const SETTING_LISTS = Object.keys(DEFAULT_SETTING);

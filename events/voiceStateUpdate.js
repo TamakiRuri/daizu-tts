@@ -16,6 +16,7 @@ module.exports={
     name: 'voiceStateUpdate',
     timeMessage(dTime, dAction, stat){
         serverFile = bot_utils.get_server_file(stat.guild.id);
+        if (serverFile.notify === false) return;
         global.channelMap.set(stat.guild.id, serverFile.text);
         let Lchannel = global.channelMap.get(stat.guild.id);
         if (!Lchannel){
@@ -69,7 +70,7 @@ module.exports={
             startTime: new Date(),
         }
         global.vcTimeMap.set(startChannel.channelId, vcStatus);
-        if (global.vcServerMap.get(startChannel.guildId) == null|| Date.now() - global.vcServerMap.get(startChannel.guildId)>60000){
+        if (global.vcServerMap.get(startChannel.guildId) == null|| Date.now() - global.vcServerMap.get(startChannel.guildId)>6000){
             this.timeMessage(vcStatus.startTime, 'start', startChannel);
             global.vcServerMap.set(startChannel.guildId, Date.now());
         }
@@ -81,7 +82,7 @@ module.exports={
         if (global.vcTimeMap.get(endChannel.channelId)== undefined)return;
         let timeDiff = endTime - global.vcTimeMap.get(endChannel.channelId).startTime;
         // スパム防止のため時間を記録し、短すぎるときに通知を行わなくなります（countStartにもあります）(ms)
-        if (global.vcServerMap.get(endChannel.guildId) == null || Date.now() - global.vcServerMap.get(endChannel.guildId)>60000){
+        if (global.vcServerMap.get(endChannel.guildId) == null || Date.now() - global.vcServerMap.get(endChannel.guildId)>6000){
             this.timeMessage(timeDiff, 'end', endChannel);
             global.vcServerMap.set(endChannel.guildId, null);
         }
