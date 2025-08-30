@@ -10,7 +10,7 @@ const {
   EmbedBuilder, ActivityType, Collection
 } = require('discord.js');
 const fs = require('fs');
-const { isRomaji, toKana } = require('wanakana');
+// const { isRomaji, toKana } = require('wanakana');
 const log4js = require('log4js');
 
 const Voicevox = require('./voicevox.js');

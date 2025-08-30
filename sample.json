@@ -11,5 +11,8 @@
   },
   "DICT_DIR": "./dictionaries",
   "EXTEND_PASS": "notoiro",
-  "TMP_PREFIX": "_main"
+  "TMP_PREFIX": "_main",
+  "TEXT_LENGTH_NORMAL": 150,
+  "TEXT_LENGTH_MAX": 400,
+  "PRONOUNCE_SPEED_MAX": 150
 }

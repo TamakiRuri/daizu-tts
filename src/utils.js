@@ -1,4 +1,9 @@
 const emoji_regex = require('emoji-regex');
+const {
+  TEXT_LENGTH_NORMAL,
+  TEXT_LENGTH_MAX,
+  PRONOUNCE_SPEED_MAX
+} = require('../config.json');
 
 module.exports = class Utils{
   static replace_url(text){
@@ -15,14 +20,14 @@ module.exports = class Utils{
     let text_speed = 0;
     let text_after = text;
 
-    // 80文字以下、加速しない、変更しない
-    if(count < 80) text_speed = 0;
-    // 80文字以上280文字以下、加速する、変更しない
-    else if(count > 80 && count < 280) text_speed = 200;
-    // 280文字以上、加速する、変更する。
+    // NORMAL文字以下、加速しない、変更しない
+    if(count < TEXT_LENGTH_NORMAL) text_speed = 0;
+    // NORMAL文字以上MAX文字以下、加速する、変更しない
+    else if(count > TEXT_LENGTH_NORMAL && count < TEXT_LENGTH_MAX) text_speed = PRONOUNCE_SPEED_MAX;
+    // 文字以上、加速する、変更する。
     else{
-      text_speed = 200;
-      text_after = text.slice(0, 280) + "。いかしょうりゃく";
+      text_speed = PRONOUNCE_SPEED_MAX;
+      text_after = text.slice(0, TEXT_LENGTH_MAX) + "。いかしょうりゃく";
     }
 
     return { text: text_after, speed: text_speed };

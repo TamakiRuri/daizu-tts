@@ -12,6 +12,8 @@ This is a fork of voice-tts-discord
 
 元のプロジェクトと比べてkagome front、remote replaceとGoを使用せず、セットアップがよりシンプルになっています。
 
+> このプロジェクトはLinuxを想定しています。WindowsではWSLのみ動作確認をしています。
+
 ## 機能
 
 1. 指定のチャンネルの読み上げ
@@ -81,13 +83,18 @@ RuriSapphireによって書かれたコードはすべてMIT License (c) RuriSap
     1. `git clone https://github.com/TamakiRuri/daizu-tts.git; cd daizu-tts`
     2. `cp sample.json config.json`
     3. config.jsonを編集します
-        - `VOICEVOX_ENGINE`は2970を自分の指定したポートに合わせます
-        - `TMP_DIR`は音声のキャッシュディレクトリ、頻繁に書き換わるのでシステムのメモリ上で保存するキャッシュメモリが好ましいです
-        - `TOKEN`は上のBotトークンです。忘れたらもう一回Reset Tokenで再生成できます。
-        - `PREFIX`は読み上げない文章につけるプリフィックス
-        - `SERVER_DIR`はサーバーの設定ファイルが保存されるディレクトリです。そのまま使うなら`servers`ってフォルダを作っておいたほうがいいでしょう。
-        - `OPUS_CONVERT`はOpus(オープンソースな音声フォーマット)(BSD-3License)への変換機能の設定です。`bitrate`はビットレート、`threads`はスレッド数です。
-        - `DICT_DIR`はグローバル辞書を保存するディレクトリです。その中の辞書を編集することでグローバル辞書を追加できます。
+        - `VOICEVOX_ENGINE`: 2970を自分の指定したポートに合わせます
+        - `TMP_DIR`: 音声のキャッシュディレクトリ。頻繁に書き換わるのでシステムのメモリ上で保存するキャッシュメモリが好ましいです
+        - `TOKEN`: 上のBotトークンです。忘れたらもう一回Reset Tokenで再生成できます
+        - `PREFIX`: 読み上げない文章につけるプリフィックス
+        - `SERVER_DIR`: サーバーの設定ファイルが保存されるディレクトリ。そのまま使うなら`servers`ってフォルダを作っておいたほうがいいでしょう
+        - `OPUS_CONVERT`: Opus(オープンソースな音声フォーマット)(BSD-3License)への変換機能の設定
+        - `bitrate`: Opusのビットレート
+        - `threads`: Opusのスレッド数
+        - `DICT_DIR`: グローバル辞書を保存するディレクトリ。その中の辞書を編集することでグローバル辞書を追加できます
+        - `TEXT_LENGTH_NORMAL`: 通常のスピードで読み上げる一つの文章の文字数上限
+        - `TEXT_LENGTH_MAX`: スピードアップ含めた読み上げる一つの文章の文字数上限
+        - `PRONOUNCE_SPEED_MAX`: 通常の上限を超えた状態で読み上げのスピード。デフォルト: 0, 上限: 200
     4. `npm install`
     5. `npm run production`
     6. 招待用のURLでサーバーへ招待します。
