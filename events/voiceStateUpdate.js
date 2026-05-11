@@ -92,32 +92,40 @@ module.exports={
     },
     async execute(endChannel, startChannel){
         if(!startChannel && !endChannel){
+            // global.vcPauseMap.set(startChannel.guild.id, false);
             console.log('Voice Channels Unreachable');
             return;
         }
-        if (endChannel.channel!=null && startChannel.channel==null){
+        if (endChannel.channel!==null && startChannel.channel==null){
+            
             if (bot_utils.get_server_file(endChannel.guild.id).autojoin===false) return;
-            //console.log('Exited');
-            if(endChannel.channel.members.size==0){
+            // console.log('Exited');
+            if(endChannel.channel.members.size===0){
                 this.countEnd(endChannel);
+                global.vcPauseMap.set(startChannel.guild.id, false);
                 return;
             }
             return;
         }
-        else if (startChannel.channel!=null && endChannel.channel==null){
-            //console.log('Joined');
+        else if (startChannel.channel!=null && endChannel.channel===null){
+            // console.log('Joined');
             if (bot_utils.get_server_file(startChannel.guild.id).autojoin===false) return;
-            if(startChannel.channel.members.size==1){
+            // console.log(global.vcPauseMap);
+            if (global.vcPauseMap.get(startChannel.guild.id)===true) return;
+            
+            if(startChannel.channel.members.size===1){
                 this.countStart(startChannel);
                 return;
             }
             return;
         }
-        else if (startChannel.channel!=null && endChannel.channel!=null){
-            //console.log('Moved');
+        else if (startChannel.channel!=null && endChannel.channel!==null){
+            if (startChannel.channel === endChannel.channel) return;
+            // console.log('Moved');
             if (bot_utils.get_server_file(endChannel.guild.id).autojoin===false || bot_utils.get_server_file(endChannel.guild.id).text===null) return;
             if(endChannel.channel.members.size<=1){
                 this.countEnd(endChannel);
+                global.vcPauseMap.set(startChannel.guild.id, false);
             }
             if(startChannel.channel.members.size===1){
                 this.countStart(startChannel);

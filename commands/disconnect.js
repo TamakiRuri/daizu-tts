@@ -6,9 +6,16 @@ module.exports = {
   },
   async execute(interaction) {
     const guild = interaction.guild;
-
+    global.vcPauseMap.set(guild.id, true);
+    // console.log(global.vcPauseMap);
     const connection = getVoiceConnection(guild.id);
-    connection.destroy();
-    await interaction.reply({ content: '切断しました。' });
+    if (connection != null){
+        connection.destroy();
+        await interaction.reply({ content: '切断しました。' });
+    }
+    else{
+      await interaction.reply({ content: 'ボイスチャンネルの接続がありません。' })
+    }
+    
   },
 }

@@ -49,6 +49,7 @@ global.connections_map = new Map();
 global.channelMap = new Map();
 global.vcTimeMap = new Map();
 global.vcServerMap = new Map();
+global.vcPauseMap = new Map();
 
 let voice_library_list = [];
 
@@ -181,7 +182,7 @@ module.exports = class App{
 	  }
   }
 
-    client.on('ready', async () => {
+    client.on('clientReady', async () => {
       // コマンド登録
       let data = [];
       for(const commandName in this.commands) data.push(this.commands[commandName].data);
@@ -529,6 +530,8 @@ module.exports = class App{
 
     if (auto){
       voice_channel_id = interaction.channel.id;
+      // VC入室の一時停止を終了
+      global.vcPauseMap.set(interaction.guildId, false);
     }
     else {
     const member_vc = member.voice.channel;
@@ -642,6 +645,7 @@ module.exports = class App{
     const serverFile = bot_utils.get_server_file(guild_id);
     if (serverFile){
     if(!connection&&serverFile.autojoin&&new_s.channel!=null){
+      if(vcPauseMap.get(guild_id)===true)return;
       this.connect_vc(new_s, true);
       return;
     }
