@@ -3,7 +3,7 @@ const { ApplicationCommandOptionType } = require('discord.js');
 module.exports = {
   data: {
     name: "setdefaultvoice",
-    description: "デフォルトの声一括設定するやつ。",
+    description: "ふっかつのじゅもんでデフォルトの声を一括設定します",
     options: [
       {
         type: ApplicationCommandOptionType.String,

@@ -41,6 +41,7 @@ const client = new Client({
 client.commands = new Collection();
 
 global.voicevox = new Voicevox();
+global.voice_list = [];
 
 let logger = log4js.getLogger();
 const bot_utils = new BotUtils(logger);
@@ -68,7 +69,7 @@ const { connect } = require("http2");
 module.exports = class App{
   constructor(){
     this.voicevox = global.voicevox;
-    this.voice_list = [];
+    global.voice_list = global.voice_list;
     this.dictionaries = [];
     this.dict_regexp = null;
     this.commands = {};
@@ -115,13 +116,13 @@ module.exports = class App{
   async setup_voicevox(){
     await this.voicevox.check_version();
     const voiceinfos = await this.get_voicelist();
-    this.voice_list = voiceinfos.speaker_list;
+    global.voice_list = voiceinfos.speaker_list;
     voice_library_list = voiceinfos.voice_library_list;
 
-    logger.debug(this.voice_list);
+    logger.debug(global.voice_list);
     logger.debug(voice_library_list);
 
-    bot_utils.init_voicelist(this.voice_list, voice_library_list);
+    bot_utils.init_voicelist(global.voice_list, voice_library_list);
 
     const tmp_voice = { speed: 1, pitch: 0, intonation: 1, volume: 1 };
 
@@ -153,7 +154,7 @@ module.exports = class App{
 
     const setvoice_commands = [];
 
-    for(let i = 0; i < Math.ceil(this.voice_list.length/MAXCHOICE); i++){
+    for(let i = 0; i < Math.ceil(global.voice_list.length/MAXCHOICE); i++){
       const start = i * MAXCHOICE;
       const end = (i + 1) * MAXCHOICE;
 
@@ -164,9 +165,9 @@ module.exports = class App{
           {
             type: ApplicationCommandOptionType.Integer,
             name: "voice",
-            description: "どの声がいいの？",
+            description: "声",
             required: true,
-            choices: this.voice_list.slice(start, end)
+            choices: global.voice_list.slice(start, end)
           }
         ]
       };
@@ -214,7 +215,7 @@ module.exports = class App{
       }
 
       if(this.is_target(msg)){
-        vc_process.add_text_queue(msg);
+        vc_process.add_text_queue(msg).bind(vc_process);
       }
     });
 
@@ -276,13 +277,10 @@ module.exports = class App{
 
       switch(command_name){
         case "connect":
-          await vc_process.connect_vc(interaction, false);
+          await vc_process.connect_vc(interaction, false).bind(vc_process);
           break;
-        case "setvoiceall":
-        case "currentvoice":
-        case "resetconnection":
         case "copyvoicesay":
-          await this[command_name](interaction);
+          await command.execute(interaction, vc_process);
           break;
         case "setspeed":
         case "setpitch":
@@ -292,21 +290,23 @@ module.exports = class App{
           break;
         case "setdefaultvoice":
           if(!(interaction.member.permissions.has('Administrator'))){
-            await interaction.reply({ content: "権限がないよ！" });
+            await interaction.reply({ content: "権限がありません！" });
             break;
           }
-          await this.setvoiceall(interaction, "DEFAULT");
-          break;
         case "defaultvoice":
-          await this.currentvoice(interaction, "DEFAULT");
+          await command.execute(interaction, "DEFAULT");
+          break;
+        case "credit":
+          await command.execute(interaction, voice_library_list);
+          break;
+        case "info":
+          await command.execute(interaction, this);
           break;
         default:
           // setvoiceは無限に増えるのでここで処理
           if(/setvoice[0-9]+/.test(interaction.commandName)){
             await this.setvoice(interaction, 'voice');
           }else{
-            if (command_name === "credit") await command.execute(interaction, voice_library_list);
-            if (command_name === "info") await command.execute(interaction, this);
             await command.execute(interaction);
           }
           break;
@@ -380,7 +380,7 @@ module.exports = class App{
     let text = "";
     switch(type){
       case "voice":
-        text = `声を${this.voice_list.find(el => parseInt(el.value, 10) === interaction.options.get("voice").value).name}に変更しました。`;
+        text = `声を${global.voice_list.find(el => parseInt(el.value, 10) === interaction.options.get("voice").value).name}に変更しました。`;
         break;
       case "speed":
         text = `声の速度を${interaction.options.get('speed').value}に変更しました。`;
@@ -396,140 +396,6 @@ module.exports = class App{
     await interaction.reply({ content: text });
   }
 
-  async setvoiceall(interaction, override_id = null){
-    const guild_id = interaction.guild.id;
-    const member_id = override_id ?? interaction.member.id;
-
-    const connection = global.connections_map.get(guild_id);
-
-    const server_file = bot_utils.get_server_file(guild_id);
-
-    let voices = server_file.user_voices;
-
-    let voice = interaction.options.get("voiceall").value;
-    try{
-      voice = ResurrectionSpell.decode(voice);
-      // もしボイスなければID0にフォールバック
-      if(!(this.voice_list.find(el => parseInt(el.value, 10) === voice.voice))) voice.voice = 0;
-    }catch(e){
-      logger.debug(e);
-      await interaction.reply({ content: "ふっかつのじゅもんが違います！" });
-      return;
-    }
-
-    if(!(this.voice_list.find(el => parseInt(el.value, 10) === voice.voice))){
-      await interaction.reply({ content: "ふっかつのじゅもんが違います！" });
-      return;
-    }
-
-    voices[member_id] = voice;
-
-    bot_utils.write_serverinfo(guild_id, server_file, { user_voices: voices });
-
-    if(connection) connection.user_voices = voices;
-
-    let name = interaction.member.displayName;
-    if(override_id === "DEFAULT") name = "デフォルト";
-
-    const em = new EmbedBuilder()
-      .setTitle(`${name}の声設定を変更しました。`)
-      .addFields(
-        { name: "声の種類(voice)", value: (this.voice_list.find(el => parseInt(el.value, 10) === voice.voice)).name },
-        { name: "声の速度(speed)", value: `${voice.speed}`},
-        { name: "声のピッチ(pitch)", value: `${voice.pitch}`},
-        { name: "声のイントネーション(intonation)", value: `${voice.intonation}`},
-      );
-
-    await interaction.reply({ embeds: [em] });
-  }
-
-  async currentvoice(interaction, override_id = null){
-    const member_id = override_id ?? interaction.member.id;
-
-    const server_file = bot_utils.get_server_file(interaction.guild.id);
-
-    let voices = server_file.user_voices;
-
-    let sample_voice_info = { voice: 1, speed: 100, pitch: 100, intonation: 100, volume: 100 };
-
-    let is_default = false;
-    let is_not_exist_server_settings = false;
-
-    if(!(voices[member_id])){
-      // ないならとりあえずデフォルト判定
-      is_default = true;
-
-      // もしサーバー設定もないなら(=1回もVCに入ってないなら)フラグだけ生やしてシステムの設定を持ってくる
-      if(voices["DEFAULT"]) sample_voice_info = voices["DEFAULT"];
-      else is_not_exist_server_settings = true;
-    }else{
-      sample_voice_info = voices[member_id];
-    }
-
-    let name = interaction.member.displayName;
-    if(member_id === "DEFAULT") name = "デフォルト";
-
-    const em = new EmbedBuilder()
-      .setTitle(`${name}の声設定`)
-      .addFields(
-        { name: "声の種類(voice)", value: (this.voice_list.find(el => parseInt(el.value, 10) === sample_voice_info.voice)).name },
-        { name: "声の速度(speed)", value: `${sample_voice_info.speed}`},
-        { name: "声のピッチ(pitch)", value: `${sample_voice_info.pitch}`},
-        { name: "声のイントネーション(intonation)", value: `${sample_voice_info.intonation}`},
-      )
-      .addFields(
-        { name: "ふっかつのじゅもん", value: ResurrectionSpell.encode(`${sample_voice_info.voice},${sample_voice_info.speed},${sample_voice_info.pitch},${sample_voice_info.intonation}`)},
-      );
-
-    if(member_id !== "DEFAULT" && is_default){
-      if(is_not_exist_server_settings){
-        em.setDescription("注意: あなたの声設定はこのサーバーのデフォルト声設定ですが、サーバーのデフォルト声設定が生成されていないため正確ではない場合があります。")
-      }else{
-        em.setDescription("注意: あなたの声設定はこのサーバーのデフォルト声設定です。サーバーのデフォルト声設定が変更された場合はそれに追従します。");
-      }
-    }
-
-    await interaction.reply({ embeds: [em] });
-  }
-
-  async resetconnection(interaction){
-    const guild_id = interaction.guild.id;
-
-    const vc_con = getVoiceConnection(guild_id);
-    if(vc_con) vc_con.destroy();
-
-    const connection = global.connections_map.get(guild_id);
-    if(connection) connection.audio_player.stop();
-    global.connections_map.delete(guild_id);
-
-    bot_utils.update_status_text(client);
-
-    interaction.reply({ content: "どっかーん！" })
-  }
 
 
-  async copyvoicesay(interaction){
-    const guild_id = interaction.guild.id;
-
-    const connection = global.connections_map.get(guild_id);
-
-    if(!connection){
-      await interaction.reply({ content: "接続ないよ" });
-      return;
-    }
-
-    let voice_target = interaction.options.get('user').value;
-    let text = interaction.options.get('text').value;
-
-    // add_text_queue が利用している部分だけ満たすObjectを作る
-    let msg_obj = {
-      cleanContent: text,
-      guild:{ id: guild_id },
-      member: { id: voice_target }
-    }
-
-    vc_process.add_text_queue(msg_obj, true);
-
-    await interaction.reply({ content: "まかせて！" });
-  }
 }
