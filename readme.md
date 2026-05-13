@@ -40,7 +40,7 @@ RuriSapphireによって書かれたコードはすべてMIT License (c) RuriSap
 
 1. Git
 2. Node.js  v20以上 (aptでインストールするとv18がインストールされることがありますのでご注意ください)
-3. [Voicevox Engine](https://github.com/VOICEVOX/voicevox_engine/)
+3. Voicevox Engine (インストール方法は下にあります)
 4. Discord APIのトークン
 5. FFmpeg
 
@@ -72,13 +72,14 @@ RuriSapphireによって書かれたコードはすべてMIT License (c) RuriSap
     7. その下の`MESSAGE CONTENT INTENT`を有効にします
     > 読み上げのため、`MESSAGE CONTENT INTENT`は必須です
 2. Voicevox Engineを入れます
-    1. [Voicevoxの公式](https://voicevox.hiroshiba.jp/ )から自分の環境に合ったやつをダウンロードしてくる(Engineのリポジトリが最新じゃないのでフル版のEngine部分だけ使う)
-    2. vv-engineフォルダの中の`run`を実行する(違う名前になる場合があります)`--port`でポート指定してください(わからない場合は `--port 2970` )。同じコンソールでVoicevoxとdaizu-ttsを動かしたいときには、最後に&をつけます。
+    1. [Voicevoxの公式](https://voicevox.hiroshiba.jp/ )から自分の環境に合ったやつをダウンロードしてください。(Engineのリポジトリが最新じゃないのでフル版のEngine部分だけ使います)
+        - tar.gzなどの圧縮ファイルを解凍してご利用ください。インストーラーの使い方はここで触りません。（ここではコマンドラインのみになります）
+    2. vv-engineフォルダの中の`run`を実行します。(違う名前になる場合があります)`--port`でポート指定してください(わからない場合は `--port 2970` )。同じコンソールでVoicevoxとdaizu-ttsを動かしたいときには、最後に&をつけます。
     例: VOICEVOXフォルダで `./vv-engine/run --port 2970 &`
 3. 環境を整えます
     1. 好きな方法でNode.jsを入れます(Node.js v20以上が必要です) 
     2. 好きな方法でGitを入れます
-    3. 好きな方法でFFmpegを入れます(Linuxならパッケージマネージャーから入れるといい)
+    3. 好きな方法でFFmpegを入れます(Linuxならパッケージマネージャーから入れると大丈夫です)
 4. 起動します
     1. `git clone https://github.com/TamakiRuri/daizu-tts.git; cd daizu-tts`
     2. `cp sample.json config.json`
@@ -104,7 +105,7 @@ RuriSapphireによって書かれたコードはすべてMIT License (c) RuriSap
 
 ```
     /start //初めて利用する時のチュートリアル
-    /auto //自動接続・ボイスチャット検知有効/無効
+    /auto //自動接続・ボイスチャット検知有効/無効の切り替え
     /setnotifychannel //ボイスチャット検知の通知チャンネルを現在のチャンネルに設定
     /resetnotifychannel //通知を無効にする
     /connect  //ボイスチャットに接続
@@ -113,5 +114,16 @@ RuriSapphireによって書かれたコードはすべてMIT License (c) RuriSap
     /help  //ヘルプ
 
 ```
+
+その他のコマンドについては /help にご参照ください。
+
+#### ふっかつのじゅもん
+
+サーバーのデフォルト、もしくは自分のボイスを一括で設定するための文字列です。
+
+```
+    /currentvoice
+```
+で確認できます。
 
 > もし問題がありましたら、issueで書いてくれると助かります。
