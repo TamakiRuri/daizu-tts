@@ -219,7 +219,7 @@ module.exports = class App{
       }
     });
 
-    client.on('voiceStateUpdate', vc_process.check_join_and_leave.bind(vc_process));
+    client.on('voiceStateUpdate', this.check_join_and_leave());
   }
 
   setup_process(){
@@ -346,6 +346,75 @@ module.exports = class App{
     }
 
     return { speaker_list: speaker_list, voice_library_list: lib_list };
+  }
+
+  check_join_and_leave(old_s, new_s) {
+    // console.log(this);
+    const guild_id = new_s.guild.id;
+    // 接続ないときに接続する
+    const connection = global.connections_map.get(guild_id);
+    const serverFile = bot_utils.get_server_file(guild_id);
+    if (global.vcPauseMap.get(guild_id) === true) return;
+    if (serverFile) {
+        if (! connection && serverFile.autojoin && new_s.channel != null) {
+            vc_process.connect_vc.bind(vc_process)(new_s, true);
+            return;
+        }
+    }
+    if (! connection) {
+        return;
+    }
+
+    const member = new_s.member;
+    if (member.user.bot) 
+        return;
+    
+
+    const new_voice_id = new_s.channelId;
+    const old_voice_id = old_s.channelId;
+    logger.debug(`old_voice_id: ${old_voice_id}`);
+    logger.debug(`new_voice_id: ${new_voice_id}`);
+    logger.debug(`con voice id: ${
+        connection.voice
+    }`);
+
+    // 現在の監視対象じゃないなら抜ける
+    if ((connection.voice !== new_voice_id) && (connection.voice !== old_voice_id) && (old_voice_id === new_voice_id)) 
+        return;
+    
+
+    const is_join = (new_s.channelId === connection.voice);
+    const is_leave = (old_s.channelId === connection.voice);
+
+    logger.debug(`is_join: ${is_join}`);
+    logger.debug(`is_leave: ${is_leave}`);
+    logger.debug(`xor: ${
+        xor(is_join, is_leave)
+    }`);
+
+    if (is_leave && old_s.channel && old_s.channel.members && old_s.channel.members.size === 1) {
+        const d_connection = getVoiceConnection(guild_id);
+        d_connection.destroy();
+
+        return;
+    }
+
+    if (! xor(is_join, is_leave)) 
+        return;
+    
+
+    let text = "にゃーん";
+    if (is_join) {
+        text = `${
+            member.displayName
+        }さんが入室しました`;
+    } else if (is_leave) {
+        text = `${
+            member.displayName
+        }さんが退出しました`;
+    }
+
+    vc_process.add_system_message.bind(vc_process)(text, guild_id, member.id);
   }
 
   async setvoice(interaction, type){
