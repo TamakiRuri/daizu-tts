@@ -6,7 +6,7 @@ const BotUtils = require('../src/bot_utils.js');
 let logger = log4js.getLogger();
 const bot_utils = new BotUtils(logger);
 
-const ResurrectionSpell = require('./resurrection_spell.js');
+const ResurrectionSpell = require('../src/resurrection_spell.js');
 
 module.exports = {
   data: {

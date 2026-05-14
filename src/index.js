@@ -215,7 +215,7 @@ module.exports = class App{
       }
 
       if(this.is_target(msg)){
-        vc_process.add_text_queue(msg).bind(vc_process);
+        vc_process.add_text_queue.bind(vc_process)(msg);
       }
     });
 
@@ -277,7 +277,7 @@ module.exports = class App{
 
       switch(command_name){
         case "connect":
-          await vc_process.connect_vc(interaction, false).bind(vc_process);
+          await vc_process.connect_vc.bind(vc_process)(interaction, false);
           break;
         case "copyvoicesay":
           await command.execute(interaction, vc_process);
@@ -287,14 +287,6 @@ module.exports = class App{
         case "setintonation":
           command_name = command_name.replace("set", "");
           await this.setvoice(interaction, command_name);
-          break;
-        case "setdefaultvoice":
-          if(!(interaction.member.permissions.has('Administrator'))){
-            await interaction.reply({ content: "権限がありません！" });
-            break;
-          }
-        case "defaultvoice":
-          await command.execute(interaction, "DEFAULT");
           break;
         case "credit":
           await command.execute(interaction, voice_library_list);

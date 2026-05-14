@@ -40,7 +40,7 @@ module.exports = {
       member: { id: voice_target }
     }
 
-    vc_process.add_text_queue(msg_obj, true).bind(vc_process);
+    vc_process.add_text_queue.bind(vc_process)(msg_obj, true);
 
     await interaction.reply({ content: "まかせてください！" });
   }
