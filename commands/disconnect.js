@@ -9,7 +9,7 @@ module.exports = {
     
     const connection = getVoiceConnection(guild.id);
     if (connection != null){
-        global.vcPauseMap.set(guild, true);
+        global.vcPauseMap.set(guild.id, true);
         connection.destroy();
         await interaction.reply({ content: '切断しました。' });
     }
