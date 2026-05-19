@@ -219,7 +219,7 @@ module.exports = class App{
       }
     });
 
-    client.on('voiceStateUpdate', this.check_join_and_leave());
+    client.on('voiceStateUpdate', this.check_join_and_leave.bind(this));
   }
 
   setup_process(){
@@ -349,14 +349,14 @@ module.exports = class App{
   }
 
   check_join_and_leave(old_s, new_s) {
-    // console.log(this);
     const guild_id = new_s.guild.id;
     // 接続ないときに接続する
     const connection = global.connections_map.get(guild_id);
     const serverFile = bot_utils.get_server_file(guild_id);
-    if (global.vcPauseMap.get(guild_id) === true) return;
+    
     if (serverFile) {
         if (! connection && serverFile.autojoin && new_s.channel != null) {
+            if (global.vcPauseMap.get(guild_id) === true) return;
             vc_process.connect_vc.bind(vc_process)(new_s, true);
             return;
         }
