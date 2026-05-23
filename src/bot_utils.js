@@ -34,9 +34,9 @@ module.exports = class BotUtils{
 
     this.EXTEND_ENABLE = EXTEND_PASS !== undefined && EXTEND_PASS !== "none";
   }
-    update_status_text(client){
-      client.user.setActivity(`${global.connections_map.size}本の接続`, { type: ActivityType.Playing });
-    }
+  update_status_text(client){
+    client.user.setActivity(`${global.connections_map.size}本の接続`, { type: ActivityType.Playing });
+  }
 
   init_voicelist(voice_list, voice_library_list){
     const list = voice_list.toSorted((a, b) => a.value - b.value);

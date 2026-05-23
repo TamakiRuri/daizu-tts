@@ -97,7 +97,7 @@ module.exports = (app) => {
 
   console.log(`${indent}${fg_blue}production:      ${fg_default}  ${ans(!app.status.debug, 'yes', 'no')}`);
   console.log(`${indent}${fg_blue}server count:    ${fg_default}  ${app.status.connected_servers} servers`);
-  console.log(`${indent}${fg_blue}voice count:     ${fg_default}  ${app.voice_list.length} voices`);
+  console.log(`${indent}${fg_blue}voice count:     ${fg_default}  ${global.voice_list.length} voices`);
   console.log(`${indent}${fg_blue}dict word count: ${fg_default}  ${app.dictionaries.length}`);
   console.log(`${indent}${fg_blue}pre opus convert:${fg_default}  ${ans(app.status.opus_convert_available, "available", "unavailable")}`);
   console.log(`\n`);
