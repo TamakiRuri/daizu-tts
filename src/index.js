@@ -265,7 +265,11 @@ module.exports = class App{
   }
 
   async onInteraction(interaction){
-    if(!(interaction.isChatInputCommand()) || !(interaction.inGuild())) return;
+    if(!(interaction.isChatInputCommand())) return;
+    if(!(interaction.inGuild())){
+      await interaction.reply({ content: 'DMではご利用いただけません。' });
+      return;
+    }
 
     logger.debug(interaction);
 
