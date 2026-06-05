@@ -14,14 +14,17 @@ module.exports = {
     async execute(interaction){
         const serverFile = bot_utils.get_server_file(interaction.guildId);
         const result = serverFile.autojoin;
-        bot_utils.write_serverinfo(interaction.guildId, serverFile, {autojoin : !result});
-        if (!result === true){
-            bot_utils.write_serverinfo(interaction.guildId, serverFile, {textchannel:interaction.channel.id});
+        const target = !result;
+        if (target === true){
+            bot_utils.write_serverinfo(interaction.guildId, serverFile, {autojoin : target, textchannel : interaction.channel.id});
             let connection = global.connections_map.get(interaction.guildId);
-            if (connection)connection.text = interaction.channelId;
+            if (connection)connection.text = interaction.channel.id;
         }
-        logger.debug('Command \' SetChannel \' used in Server '+ interaction.guild.toString() + ' ID :' + global.channelMap.get(interaction.guildId).channelId);
-        const msg = '自動入室が'+ ((!result) ? '有効': '無効') +'になりました。' + (!result)? '読み上げのチャンネルを現在のチャンネルに設定しました。':' ';
+        else{
+            bot_utils.write_serverinfo(interaction.guildId, serverFile, {autojoin : target});
+        }
+        logger.debug('Command \' auto \' used in Server '+ interaction.guild.toString() + ' ID :' + global.channelMap.get(interaction.guildId));
+        const msg = '自動入室が'+ ((target) ? '有効': '無効') +'になりました。' + ((target)? '読み上げのチャンネルを現在のチャンネルに設定しました。':' ');
         await interaction.reply({content:msg})
     }
 }
