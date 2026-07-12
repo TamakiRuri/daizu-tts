@@ -1,5 +1,6 @@
 /node_modules/
 /servers/*
+!/servers/README.md
 /dictionaries/*
 !/dictionaries/globaldict.json
 /config.json
