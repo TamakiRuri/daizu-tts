@@ -1,4 +1,4 @@
-const getVoiceConnection = require("@discordjs/voice");
+const { getVoiceConnection } = require("@discordjs/voice");
 const log4js = require('log4js');
 const BotUtils = require('../src/bot_utils.js');
 
@@ -10,7 +10,7 @@ module.exports = {
     name: "resetconnection",
     description: "切断されてるのに切断されてない判定になった場合にご利用ください。"
   },
-  async execute(interaction){
+  async execute(interaction, vc_process){
     const guild_id = interaction.guild.id;
 
     const vc_con = getVoiceConnection(guild_id);
@@ -20,7 +20,7 @@ module.exports = {
     if(connection) connection.audio_player.stop();
     global.connections_map.delete(guild_id);
 
-    bot_utils.update_status_text(client);
+    bot_utils.update_status_text(vc_process.client);
 
     interaction.reply({ content: "接続をリセットしました。" })
   }
