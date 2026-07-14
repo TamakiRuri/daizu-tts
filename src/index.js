@@ -286,6 +286,9 @@ module.exports = class App{
         case "copyvoicesay":
           await command.execute(interaction, vc_process);
           break;
+        case "resetconnection":
+          await command.execute(interaction, vc_process);
+          break;
         case "setspeed":
         case "setpitch":
         case "setintonation":
